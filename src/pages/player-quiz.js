@@ -8,9 +8,9 @@ import { useParams } from "react-router-dom";
 import { useQuery, gql } from '@apollo/client';
 
 const GAME_SESSION_QUERY = gql`
-  query getGameSession($id: Int){
+  query getGameSession($id: Int) {
     gameSessions(id: $id) {
-      roundElements {
+      currentRoundElement {
         name
         status
       }
@@ -40,7 +40,7 @@ export default function PlayerQuiz() {
   if (loading) return null;
   if (error) return `Error! ${error}`;
 
-  const {name, status} = data.gameSessions[0].roundElements;
+  const {name, status} = data.gameSessions[0].currentRoundElement;
   return (
     <>
       <DooDoopHeader />
