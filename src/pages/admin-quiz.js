@@ -81,9 +81,13 @@ export default function AdminQuiz() {
               </ListGroup>
             </Col>
             <Col md="9">
+              {
+              playing ? 
               <ListGroup>
                 <ListGroup.Item>Answer 1</ListGroup.Item>
-              </ListGroup>
+              </ListGroup> 
+              : null
+              }
             </Col>
           </Row>
         </Container>

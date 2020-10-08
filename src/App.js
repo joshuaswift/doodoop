@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
 import { AdminQuiz, CreateQuiz, JoinQuiz, PlayerQuiz, QuizSetup, Home } from "../src/pages/index";
 import { Container } from 'react-bootstrap';
@@ -6,8 +6,19 @@ import { ApolloProvider } from '@apollo/client';
 import gqlClient from "./utils/gql-client";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./App.scss";
+import socketIOClient from "socket.io-client";
+const ENDPOINT = "http://localhost:3000";
 
 export default function App() {
+  const [response, setResponse] = useState("");
+  
+  useEffect(() => {
+    const socket = socketIOClient(ENDPOINT);
+    socket.on("FromAPI", (data) => {
+      setResponse(data);
+    });
+  }, []);
+  
   return (
     <ApolloProvider client={gqlClient}>
       <Router>
