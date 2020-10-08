@@ -18,7 +18,7 @@ export default function App() {
                 <Link to="/">Home</Link>
                 <Link to="/join-quiz">Join Quiz</Link>
                 <Link to="/create-quiz">Create Quiz</Link>
-                <Link to="/quiz-setup">Quiz Setup</Link>
+                <Link to="/quiz-setup/1">Quiz Setup</Link>
                 <Link to="/admin-quiz/1">Admin Quiz</Link>
                 <Link to="/player-quiz">Player Quiz</Link>
               </li>
@@ -40,7 +40,7 @@ export default function App() {
             <Route path="/player-quiz">
               <PlayerQuiz />
             </Route>
-            <Route path="/quiz-setup">
+            <Route path="/quiz-setup/:id">
               <QuizSetup />
             </Route>
             <Route path="/">

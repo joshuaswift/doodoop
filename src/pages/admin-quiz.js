@@ -22,12 +22,10 @@ export default function AdminQuiz() {
     variables: { id: parseInt(id) },
   });
 
-  console.log(process.env.REACT_APP_GQL_URL);
-
   if (loading) return null;
   if (error) return `Error! ${error}`;
 
-  const { name, enterCode, status } = data.gameSessions[0];
+  const { name, enterCode } = data.gameSessions[0];
 
   return (
     <>
