@@ -3,7 +3,7 @@ import { Button, Container, Col, ListGroup, Row, Form, Card } from 'react-bootst
 import DooDoopHeader from "../molecules/doodoop-header";
 import Header from '../atoms/header';
 import { useParams } from "react-router-dom";
-import { useQuery, gql } from '@apollo/client';
+import { useQuery, useMutation, gql } from '@apollo/client';
 import ReactPlayer from "react-player";
 
 const GAME_SESSION_QUERY = gql`
@@ -13,6 +13,22 @@ const GAME_SESSION_QUERY = gql`
       name
       enterCode
       status
+      currentRoundElement {
+        id
+        name
+        points
+        status
+      }
+    }
+  }
+`;
+
+const NEXT_SONG_MUTATION = gql`
+  mutation getGameSessions($id: Int!) {
+    gameSessionsMutations {
+      startNextSong(id: $id) {
+        id
+      }
     }
   }
 `;
@@ -21,18 +37,33 @@ const GAME_SESSION_QUERY = gql`
 export default function AdminQuiz() {
   const { id } = useParams();
   const [playing, setPlaying] = useState(false);
-  const { loading, error, data } = useQuery(GAME_SESSION_QUERY, {
+  const { loading, error, data, refetch } = useQuery(GAME_SESSION_QUERY, {
     variables: { id: parseInt(id) },
   });
-  const onClick = (event) => {
-    event.preventDefault();
-    setPlaying(!playing);
-  }
+  const [startNextSong] = useMutation(NEXT_SONG_MUTATION, {
+    onCompleted: refetch,
+  });
 
   if (loading) return null;
   if (error) return `Error! ${error}`;
 
-  const { name, enterCode } = data.gameSessions[0];
+  const {name, enterCode} = data.gameSessions[0];
+
+  const playOrStopSong = (event) => {
+    event.preventDefault();
+
+    setPlaying(!playing);
+    
+    if (playing === false) {
+      
+    }
+    //update round element status if stopping
+  };
+  const nextSong = (event) => {
+    event.preventDefault();
+    startNextSong({ variables: { id: id } });
+  };
+
 
   return (
     <>
@@ -57,7 +88,12 @@ export default function AdminQuiz() {
           </Row>
         </Container>
         <div className="float-right mt-5">
-          <Button size="lg" variant="primary" type="submit">
+          <Button
+            size="lg"
+            variant="primary"
+            type="submit"
+            onClick={nextSong}
+          >
             Next Song
           </Button>
           <Button
@@ -65,7 +101,7 @@ export default function AdminQuiz() {
             size="lg"
             variant="primary"
             type="submit"
-            onClick={onClick}
+            onClick={playOrStopSong}
           >
             {playing ? "Stop Song" : "Play Song"}
           </Button>

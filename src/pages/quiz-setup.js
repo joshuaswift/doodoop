@@ -4,6 +4,8 @@ import DooDoopHeader from "../molecules/doodoop-header";
 import Header from "../atoms/header";
 import { useParams } from "react-router-dom";
 import { useQuery, useMutation, gql } from "@apollo/client";
+import { useHistory } from "react-router-dom";
+
 
 const GAME_SESSION_QUERY = gql`
   query getGameSession($id: Int){
@@ -43,19 +45,42 @@ const CREATE_ROUND_ELEMENT_MUTATION = gql`
   }
 `;
 
+const START_QUIZ_MUTATION = gql`
+  mutation getGameSessions($id: Int!) {
+    gameSessionsMutations {
+      start(id: $id) {
+        id
+      }
+    }
+  }
+`;
+
 export default function QuizSetup() {
   const { id } = useParams();
+  const history = useHistory();
   const [songUrl, setSongUrl] = useState("");
   const [title, setTitle] = useState("");
   const [roundName, setRoundName] = useState("");
   const [points, setPoints] = useState(1);
+  const onCompleted = () => {
+    history.push(`/admin-quiz/${id}`);
+  };
   const { loading, error, data, refetch} = useQuery(GAME_SESSION_QUERY, {
     variables: { id: parseInt(id) },
   });
 
-  const [createRoundElement] = useMutation(CREATE_ROUND_ELEMENT_MUTATION, {
-    onCompleted: refetch
+  const [startQuiz] = useMutation(START_QUIZ_MUTATION, {
+    onCompleted,
   });
+
+  const [createRoundElement] = useMutation(CREATE_ROUND_ELEMENT_MUTATION, {
+    onCompleted: refetch,
+  });
+
+  if (loading) return null;
+  if (error) return `Error! ${error}`;
+
+  const { name, roundElements } = data.gameSessions[0];
 
   const handleSubmit = (event) => {
     event.preventDefault();
@@ -74,10 +99,13 @@ export default function QuizSetup() {
     setPoints(1);
   };
 
-  if (loading) return null;
-  if (error) return `Error! ${error}`;
+   const startQuizAction = (event) => {
+     event.preventDefault();
+     startQuiz({ variables: { id: parseInt(id) } });
+   };
 
-  const { name , roundElements} = data.gameSessions[0];
+  
+
   
 
   const RenderRoundElements = () => {
@@ -101,7 +129,7 @@ export default function QuizSetup() {
           />
         </Form.Group>
         <Form.Group controlId="title">
-          <Form.Label>Title</Form.Label>
+          <Form.Label>Correct Answer</Form.Label>
           <Form.Control
             placeholder="Enter song title"
             onChange={(e) => setTitle(e.target.value)}
@@ -131,8 +159,14 @@ export default function QuizSetup() {
       <ListGroup className="mt-3">
         <RenderRoundElements />
       </ListGroup>
-      <Button size="lg" className="mt-3" variant="primary" type="submit">
-        Finish adding songs
+      <Button
+        size="lg"
+        className="mt-3"
+        variant="primary"
+        type="submit"
+        onClick={startQuizAction}
+      >
+        Start Quiz
       </Button>
     </>
   );
