@@ -1,11 +1,13 @@
 import React from "react";
 import {Button, Form, ListGroup} from 'react-bootstrap';
 import DooDoopHeader from "../molecules/doodoop-header";
+import Header from "../atoms/header";
 
 export default function QuizSetup() {
   return (
     <>
       <DooDoopHeader />
+      <Header name="BuildEmpire Hackdays 2020" />
       <Form>
         <Form.Group controlId="songUrl">
           <Form.Label>Song URL</Form.Label>

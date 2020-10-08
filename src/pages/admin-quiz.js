@@ -1,11 +1,13 @@
 import React from "react";
 import {Button, Container, Col, ListGroup, Row, Form} from 'react-bootstrap';
 import DooDoopHeader from "../molecules/doodoop-header";
+import Header from '../atoms/header';
 
 export default function AdminQuiz() {
   return (
     <>
     <DooDoopHeader/>
+    <Header name="BuildEmpire Hackdays 2020"/>
     <Form>
       <Container>
         <Row>
