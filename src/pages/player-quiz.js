@@ -1,5 +1,6 @@
 import React from "react";
 import AnswerSubmit from '../organisms/answer-submit';
+import Done from '../organisms/done';
 import WaitingForSong from '../organisms/waiting-for-song';
 import DooDoopHeader from "../molecules/doodoop-header";
 import Header from "../atoms/header";
@@ -10,29 +11,42 @@ const GAME_SESSION_QUERY = gql`
   query getGameSession($id: Int){
     gameSessions(id: $id) {
       roundElements {
+        name
         status
       }
     }
   }
 `;
 
-export default function PlayerQuiz() {
-  let { id } = useParams();
-  const { loading, error, data } = useQuery(GAME_SESSION_QUERY, {
-    variables: { id: parseInt(id) },
-  });
+function PlayerView({status}) {
+  const { session_id, player_id } = useParams();
 
+  if (status === 'completed') {
+    return <Done />;
+  } else if (status === 'playing') {
+    return <AnswerSubmit playerId={player_id} gameSessionId={session_id} />
+  } else {
+    return <WaitingForSong />
+
+  }
+}
+
+export default function PlayerQuiz() {
+  const { session_id} = useParams();
+  const { loading, error, data} = useQuery(GAME_SESSION_QUERY, {
+    variables: { id: parseInt(session_id) },
+  });
+  
   if (loading) return null;
   if (error) return `Error! ${error}`;
 
-  const { name, status } = data.gameSessions[0];
+  const {name, status} = data.gameSessions[0].roundElements;
   return (
     <>
       <DooDoopHeader />
       <Header name={name} />
       <div>
-        <AnswerSubmit />
-        <WaitingForSong />
+        <PlayerView status={status}/>
       </div>
     </>
   );
