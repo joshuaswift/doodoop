@@ -17,6 +17,7 @@ const GAME_SESSION_QUERY = gql`
   }
 `;
 
+
 export default function AdminQuiz() {
   const { id } = useParams();
   const [playing, setPlaying] = useState(false);
