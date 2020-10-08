@@ -1,7 +1,7 @@
 import React from "react";
 import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
-import { AdminQuiz, CreateQuiz, JoinQuiz, PlayerQuiz, QuizSetup } from "../src/pages/index";
-import {Container} from 'react-bootstrap';
+import { AdminQuiz, CreateQuiz, JoinQuiz, PlayerQuiz, QuizSetup, Home } from "../src/pages/index";
+import { Container } from 'react-bootstrap';
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./App.scss";
 
@@ -48,10 +48,3 @@ export default function App() {
     </Router>
   );
 }
-
-function Home() {
-  return <h2>Home</h2>;
-}
-
-
-
