@@ -26,6 +26,11 @@ const GAME_SESSION_QUERY = gql`
         points
         status
       }
+      players {
+        name
+        id
+        points
+      }
     }
   }
 `;
@@ -96,13 +101,12 @@ export default function AdminQuiz() {
   const [stopCurrentSong] = useMutation(STOP_CURRENT_SONG_MUTATION, {
     onCompleted: refetch,
   });
-  const [finishQuiz] = useMutation(FINISH_QUIZ_MUTATION);
 
   if (loading) return null;
   if (error) return `Error! ${error}`;
 
-  const {name, enterCode, currentRoundElement} = data.gameSessions[0];
-  const completedStatus = currentRoundElement && currentRoundElement.status === 'completed' ? true : false; 
+const { name, enterCode, currentRoundElement, players} = data.gameSessions[0];
+const completedStatus = currentRoundElement && currentRoundElement.status === 'completed' ? true : false; 
 
   const playSong = (event) => {
     event.preventDefault();
@@ -169,6 +173,11 @@ export default function AdminQuiz() {
   };
 
 
+  const RenderPlayersList = () => {
+    return players.map((player) => {
+      return (<ListGroup.Item key={player.id}> {player.name} - {player.points || 0} pts </ListGroup.Item>);
+    })
+  }
   return (
     <>
       <DooDoopHeader />
@@ -186,7 +195,7 @@ export default function AdminQuiz() {
           <Row>
             <Col md="3">
               <ListGroup>
-                <ListGroup.Item>Player 1 - 200pts</ListGroup.Item>
+                <RenderPlayersList />
               </ListGroup>
             </Col>
             <Col md="9">{completedStatus ? <RenderAnswers /> : null}</Col>
