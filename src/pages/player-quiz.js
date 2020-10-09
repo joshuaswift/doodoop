@@ -40,13 +40,13 @@ export default function PlayerQuiz() {
   if (loading) return null;
   if (error) return `Error! ${error}`;
 
-  const {name, status} = data.gameSessions[0].currentRoundElement;
+  const {name, status} = data.gameSessions[0].currentRoundElement || {};
   return (
     <>
       <DooDoopHeader />
       <Header name={name} />
       <div>
-        <PlayerView status={status}/>
+        <PlayerView status={status} />
       </div>
     </>
   );

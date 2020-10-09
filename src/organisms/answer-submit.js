@@ -3,18 +3,34 @@ import { Button, Form} from "react-bootstrap";
 import { useMutation, gql } from "@apollo/client";
 
 
+
 const CREATE_ANSWER_MUTATION = gql`
-  mutation createAnswer(
-    $answer: String!
-    $gameSessionId: Integer
-    $playerId: Integer
+  mutation getGameSessions(
+    $playerId: Int!
+    $value: String!
+    $gameSessionId: Int!
   ) {
     answersMutations {
       create(
-        answer: $answer
-        gameSessionId: $gameSessionId
         playerId: $playerId
-      )
+        gameSessionId: $gameSessionId
+        value: $value
+      ) {
+        id
+        value
+        player {
+          name
+          id
+        }
+        roundElement {
+          id
+          name
+          gameSession {
+            id
+            name
+          }
+        }
+      }
     }
   }
 `;
@@ -27,9 +43,9 @@ export default function AnswerSubmit({ gameSessionId, playerId }) {
     event.preventDefault();
     createAnswer({
       variables: {
-        answer,
-        gameSessionId,
-        playerId,
+        value: answer,
+        gameSessionId: parseInt(gameSessionId),
+        playerId: parseInt(playerId),
       },
     });
   };
