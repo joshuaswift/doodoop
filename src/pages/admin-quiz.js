@@ -14,6 +14,13 @@ const GAME_SESSION_QUERY = gql`
       enterCode
       status
       currentRoundElement {
+        answers {
+          id
+          player {
+            name
+          }
+          value
+        }
         id
         name
         points
@@ -148,6 +155,18 @@ export default function AdminQuiz() {
 
   }
 
+  const RenderAnswers = () => {
+    return currentRoundElement ? currentRoundElement.answers.map(
+      (answer) => {
+        return (
+          <ListGroup.Item key={answer.id}>
+            {answer.player.name} - {answer.value}
+          </ListGroup.Item>
+        );
+      }
+    ) : null;
+  };
+
 
   return (
     <>
@@ -169,13 +188,7 @@ export default function AdminQuiz() {
                 <ListGroup.Item>Player 1 - 200pts</ListGroup.Item>
               </ListGroup>
             </Col>
-            <Col md="9">
-              {playing ? (
-                <ListGroup>
-                  <ListGroup.Item>Answer 1</ListGroup.Item>
-                </ListGroup>
-              ) : null}
-            </Col>
+            <Col md="9">{playing ? <RenderAnswers /> : null}</Col>
           </Row>
         </Container>
         <div className="float-right mt-5">
