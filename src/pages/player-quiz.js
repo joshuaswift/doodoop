@@ -23,7 +23,7 @@ function PlayerView({status}) {
 
   if (status === 'completed') {
     return <Done />;
-  } else if (status === 'playing') {
+  } else if (status === 'playing' || status === 'started') {
     return <AnswerSubmit playerId={player_id} gameSessionId={session_id} />
   } else {
     return <WaitingForSong />

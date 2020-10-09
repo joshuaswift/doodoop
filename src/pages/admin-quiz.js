@@ -102,6 +102,7 @@ export default function AdminQuiz() {
   if (error) return `Error! ${error}`;
 
   const {name, enterCode, currentRoundElement} = data.gameSessions[0];
+  const completedStatus = currentRoundElement && currentRoundElement.status === 'completed' ? true : false; 
 
   const playSong = (event) => {
     event.preventDefault();
@@ -188,7 +189,7 @@ export default function AdminQuiz() {
                 <ListGroup.Item>Player 1 - 200pts</ListGroup.Item>
               </ListGroup>
             </Col>
-            <Col md="9">{playing ? <RenderAnswers /> : null}</Col>
+            <Col md="9">{completedStatus ? <RenderAnswers /> : null}</Col>
           </Row>
         </Container>
         <div className="float-right mt-5">
