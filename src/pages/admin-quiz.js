@@ -22,6 +22,7 @@ const GAME_SESSION_QUERY = gql`
           value
         }
         id
+        link
         name
         points
         status
@@ -106,6 +107,7 @@ export default function AdminQuiz() {
   if (error) return `Error! ${error}`;
 
 const { name, enterCode, currentRoundElement, players} = data.gameSessions[0];
+console.log("CL: currentRoundElement", currentRoundElement);
 const completedStatus = currentRoundElement && currentRoundElement.status === 'completed' ? true : false; 
 
   const playSong = (event) => {
