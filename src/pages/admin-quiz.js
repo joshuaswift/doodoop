@@ -1,13 +1,21 @@
-import React, {useState} from "react";
-import { Button, Container, Col, ListGroup, Row, Form, Card } from 'react-bootstrap';
+import React, { useState } from "react";
+import {
+  Button,
+  Container,
+  Col,
+  ListGroup,
+  Row,
+  Form,
+  Card,
+} from "react-bootstrap";
 import DooDoopHeader from "../molecules/doodoop-header";
-import Header from '../atoms/header';
+import Header from "../atoms/header";
 import { useParams } from "react-router-dom";
-import { useQuery, useMutation, gql } from '@apollo/client';
+import { useQuery, useMutation, gql } from "@apollo/client";
 import ReactPlayer from "react-player";
 
 const GAME_SESSION_QUERY = gql`
-  query getGameSession($id: Int){
+  query getGameSession($id: Int) {
     gameSessions(id: $id) {
       id
       name
@@ -83,16 +91,13 @@ const FINISH_QUIZ_MUTATION = gql`
   }
 `;
 
-
-
-
 export default function AdminQuiz() {
   const { id } = useParams();
   const [playing, setPlaying] = useState(false);
+  const [answers, setAnswers] = useState([]);
   const { loading, error, data, refetch } = useQuery(GAME_SESSION_QUERY, {
     variables: { id: parseInt(id) },
   });
-  console.log("CL: AdminQuiz -> loading", loading);
   const [startNextSong] = useMutation(NEXT_SONG_MUTATION, {
     onCompleted: refetch,
   });
@@ -106,17 +111,30 @@ export default function AdminQuiz() {
   if (loading) return null;
   if (error) return `Error! ${error}`;
 
-const { name, enterCode, currentRoundElement, players} = data.gameSessions[0];
-console.log("CL: currentRoundElement", currentRoundElement);
-const completedStatus = currentRoundElement && currentRoundElement.status === 'completed' ? true : false; 
+  const {
+    name,
+    enterCode,
+    currentRoundElement,
+    players,
+  } = data.gameSessions[0];
+  const completedStatus =
+    currentRoundElement && currentRoundElement.status === "completed"
+      ? true
+      : false;
 
   const playSong = (event) => {
     event.preventDefault();
     playCurrentSong({ variables: { id: parseInt(id) } });
     setPlaying(true);
   };
-  const stopSong = (event) => {
+  const stopSong = async (event) => {
     event.preventDefault();
+    //fetch current round element with answers
+    //save answers in the state
+    await refetch();
+    console.log("CL: ANSWERS", currentRoundElement.answers);
+    setAnswers(currentRoundElement.answers);
+    console.log("HERE");
     stopCurrentSong({ variables: { id: parseInt(id) } });
     setPlaying(false);
   };
@@ -159,27 +177,30 @@ const completedStatus = currentRoundElement && currentRoundElement.status === 'c
     } else {
       return null;
     }
-
   }
 
   const RenderAnswers = () => {
-    return currentRoundElement ? currentRoundElement.answers.map(
-      (answer) => {
-        return (
-          <ListGroup.Item key={answer.id}>
-            {answer.player.name} - {answer.value}
-          </ListGroup.Item>
-        );
-      }
-    ) : null;
+    return answers.length
+      ? answers.map((answer) => {
+          return (
+            <ListGroup.Item key={answer.id}>
+              {answer.player.name} - {answer.value}
+            </ListGroup.Item>
+          );
+        })
+      : null;
   };
-
 
   const RenderPlayersList = () => {
     return players.map((player) => {
-      return (<ListGroup.Item key={player.id}> {player.name} - {player.points || 0} pts </ListGroup.Item>);
-    })
-  }
+      return (
+        <ListGroup.Item key={player.id}>
+          {" "}
+          {player.name} - {player.points || 0} pts{" "}
+        </ListGroup.Item>
+      );
+    });
+  };
   return (
     <>
       <DooDoopHeader />
@@ -210,6 +231,7 @@ const completedStatus = currentRoundElement && currentRoundElement.status === 'c
             }
           />
         </div>
+        <button onClick={() => refetch()}>Refetch!</button>
       </Form>
       <ReactPlayer
         url={
